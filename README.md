@@ -1,5 +1,4 @@
-# 🌐 Interactive Knowledge Network Visualizer
-
+# 🌐 3D ChatGPT Memories Visualizer
 > **Transform your ChatGPT conversation history into a stunning 3D interactive concept map**
 
 An advanced, network-graph style visualization tool that analyzes conversation themes and creates beautiful 3D interactive concept maps using Three.js. This project was created using a hybrid approach combining AI prompts with Cursor IDE for enhanced development.
