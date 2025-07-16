@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Fariz's Knowledge Network</title>
+  <style>
+    body { 
+      margin: 0; 
+      overflow: hidden; 
+      background: #0a0a0a;
+      font-family: 'Courier New', monospace;
+      cursor: grab;
+    }
+    body:active { cursor: grabbing; }
+    
+    canvas { display: block; }
+    
+    .ui-overlay {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 1000;
+      color: #00ff88;
+      font-size: 12px;
+      background: rgba(0,0,0,0.8);
+      padding: 12px;
+      border-radius: 4px;
+      border: 1px solid #00ff88;
+      font-family: 'Courier New', monospace;
+    }
+    
+    .node-info {
+      position: fixed;
+      top: 50%;
+      right: 20px;
+      transform: translateY(-50%);
+      z-index: 1000;
+      color: #00ff88;
+      background: rgba(0,0,0,0.9);
+      padding: 15px;
+      border-radius: 4px;
+      border: 1px solid #00ff88;
+      max-width: 250px;
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+      display: none;
+    }
+    
+    .category-legend {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      z-index: 1000;
+      color: #00ff88;
+      background: rgba(0,0,0,0.8);
+      padding: 12px;
+      border-radius: 4px;
+      border: 1px solid #00ff88;
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+    }
+    
+    .legend-item {
+      display: flex;
+      align-items: center;
+      margin: 4px 0;
+    }
+    
+    .legend-color {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 8px;
+    }
+  </style>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.1/build/three.module.js",
+      "three/addons/controls/OrbitControls.js": "https://unpkg.com/three@0.160.1/examples/jsm/controls/OrbitControls.js"
+    }
+  }
+  </script>
+</head>
+<body>
+  <div class="ui-overlay">
+    <div>/// FARIZ'S KNOWLEDGE NETWORK ///</div>
+    <div>drag to explore • scroll to zoom</div>
+    <div>hover for node details</div>
+  </div>
+
+  <div class="node-info" id="nodeInfo">
+    <div id="nodeTitle" style="font-weight: bold; margin-bottom: 8px;"></div>
+    <div id="nodeDescription"></div>
+  </div>
+
+  <div class="category-legend">
+    <div style="font-weight: bold; margin-bottom: 8px;">CATEGORIES</div>
+    <div class="legend-item"><div class="legend-color" style="background: #ff6b6b;"></div>AI/ML & Quantum</div>
+    <div class="legend-item"><div class="legend-color" style="background: #4ecdc4;"></div>Design & Media</div>
+    <div class="legend-item"><div class="legend-color" style="background: #45b7d1;"></div>Projects & Tools</div>
+    <div class="legend-item"><div class="legend-color" style="background: #f9ca24;"></div>Education & Career</div>
+    <div class="legend-item"><div class="legend-color" style="background: #6c5ce7;"></div>Health & Fitness</div>
+    <div class="legend-item"><div class="legend-color" style="background: #a29bfe;"></div>Language & Culture</div>
+  </div>
+
+<script type="module">
+  import * as THREE from 'three';
+  import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+  
+  console.log('Initializing Knowledge Network...');
+  
+  try {
+    // Scene setup
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setClearColor(0x0a0a0a);
+    document.body.appendChild(renderer.domElement);
+
+    // Controls
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.autoRotate = false;
+    controls.enableZoom = true;
+    camera.position.set(0, 0, 50);
+    
+    // Create subtle background particles
+    const bgGeometry = new THREE.BufferGeometry();
+    const bgMaterial = new THREE.PointsMaterial({ 
+      color: 0x222222, 
+      size: 0.5,
+      transparent: true,
+      opacity: 0.3
+    });
+    
+    const bgVertices = [];
+    for (let i = 0; i < 500; i++) {
+      const x = (Math.random() - 0.5) * 200;
+      const y = (Math.random() - 0.5) * 200;
+      const z = (Math.random() - 0.5) * 200;
+      bgVertices.push(x, y, z);
+    }
+    
+    bgGeometry.setAttribute('position', new THREE.Float32BufferAttribute(bgVertices, 3));
+    const bgParticles = new THREE.Points(bgGeometry, bgMaterial);
+    scene.add(bgParticles);
+
+    // Node data with network graph colors
+    const nodes = [
+      {"id":0,"label":"AI/ML & Quantum","color":0xff6b6b,"size":1.2,"description":"Exploring artificial intelligence and quantum computing"},
+      {"id":1,"label":"Quantum Computing","color":0xff6b6b,"size":0.8,"description":"Quantum algorithms and computational possibilities"},
+      {"id":2,"label":"AI/ML Applications","color":0xff6b6b,"size":0.9,"description":"Real-world machine learning applications"},
+      {"id":3,"label":"LangChain","color":0xff6b6b,"size":0.7,"description":"LLM application development framework"},
+      {"id":4,"label":"LLMs","color":0xff6b6b,"size":0.9,"description":"Large Language Models"},
+      {"id":5,"label":"GenAI Tools","color":0xff6b6b,"size":0.8,"description":"Generative AI platforms"},
+      {"id":6,"label":"Model Fine-Tuning","color":0xff6b6b,"size":0.7,"description":"AI model customization"},
+      {"id":7,"label":"Legal AI Assistants","color":0xff6b6b,"size":0.8,"description":"AI in legal domain"},
+      {"id":8,"label":"OCR with Mistral","color":0xff6b6b,"size":0.6,"description":"Optical Character Recognition"},
+      {"id":9,"label":"AI in Aviation & Climate","color":0xff6b6b,"size":0.7,"description":"AI applications in aviation/climate"},
+      {"id":10,"label":"Design & Media","color":0x4ecdc4,"size":1.2,"description":"Creative design and media production"},
+      {"id":11,"label":"Graphic Design","color":0x4ecdc4,"size":0.8,"description":"Visual design and branding"},
+      {"id":12,"label":"Adobe Tools","color":0x4ecdc4,"size":0.7,"description":"Adobe Creative Suite"},
+      {"id":13,"label":"Video Automation","color":0x4ecdc4,"size":0.8,"description":"Automated video workflows"},
+      {"id":14,"label":"Synthesia AI","color":0x4ecdc4,"size":0.6,"description":"AI video generation"},
+      {"id":15,"label":"ElevenLabs","color":0x4ecdc4,"size":0.6,"description":"AI voice synthesis"},
+      {"id":16,"label":"AI Film Project","color":0x4ecdc4,"size":0.7,"description":"AI-assisted filmmaking"},
+      {"id":17,"label":"Projects & Tools","color":0x45b7d1,"size":1.2,"description":"Development projects and tools"},
+      {"id":18,"label":"Vidhisaar AI","color":0x45b7d1,"size":0.9,"description":"Legal AI assistant project"},
+      {"id":19,"label":"FastAPI Backend","color":0x45b7d1,"size":0.8,"description":"High-performance API development"},
+      {"id":20,"label":"Indian Kanoon API","color":0x45b7d1,"size":0.7,"description":"Legal database integration"},
+      {"id":21,"label":"LangChain Pipeline","color":0x45b7d1,"size":0.8,"description":"AI workflow automation"},
+      {"id":22,"label":"n8n Automation","color":0x45b7d1,"size":0.7,"description":"Workflow automation"},
+      {"id":23,"label":"Legal Assistant MVP","color":0x45b7d1,"size":0.8,"description":"Legal AI MVP"},
+      {"id":24,"label":"Education & Career","color":0xf9ca24,"size":1.2,"description":"Academic and professional development"},
+      {"id":25,"label":"IIT Ropar","color":0xf9ca24,"size":0.8,"description":"Indian Institute of Technology"},
+      {"id":26,"label":"NYU Shanghai","color":0xf9ca24,"size":0.8,"description":"International university experience"},
+      {"id":27,"label":"Google Quantum AI Course","color":0xf9ca24,"size":0.7,"description":"Quantum computing education"},
+      {"id":28,"label":"Stanford Machine Learning","color":0xf9ca24,"size":0.8,"description":"Advanced ML coursework"},
+      {"id":29,"label":"Freelance Design Internships","color":0xf9ca24,"size":0.7,"description":"Professional design experience"},
+      {"id":30,"label":"Polymath Goal 2025","color":0xf9ca24,"size":0.9,"description":"Interdisciplinary learning goals"},
+      {"id":31,"label":"Health & Fitness","color":0x6c5ce7,"size":1.2,"description":"Physical wellness journey"},
+      {"id":32,"label":"Gym Routine","color":0x6c5ce7,"size":0.8,"description":"Structured exercise programming"},
+      {"id":33,"label":"Weight Loss Diet","color":0x6c5ce7,"size":0.8,"description":"Nutrition and diet management"},
+      {"id":34,"label":"Pre/Post Workout Meals","color":0x6c5ce7,"size":0.6,"description":"Nutrition timing"},
+      {"id":35,"label":"Language & Culture","color":0xa29bfe,"size":1.2,"description":"Linguistic and cultural exploration"},
+      {"id":36,"label":"Learning German","color":0xa29bfe,"size":0.8,"description":"German language acquisition"},
+      {"id":37,"label":"Word Origins & Civilizations","color":0xa29bfe,"size":0.8,"description":"Etymology and linguistics"},
+      {"id":38,"label":"Deen Dialogue NGO","color":0xa29bfe,"size":0.7,"description":"Interfaith dialogue organization"}
+    ];
+
+    const edges = [
+      {"source":0,"target":1},{"source":0,"target":2},{"source":0,"target":3},
+      {"source":0,"target":4},{"source":0,"target":5},{"source":0,"target":6},
+      {"source":0,"target":7},{"source":0,"target":8},{"source":0,"target":9},
+      {"source":10,"target":11},{"source":10,"target":12},{"source":10,"target":13},
+      {"source":10,"target":14},{"source":10,"target":15},{"source":10,"target":16},
+      {"source":17,"target":18},{"source":17,"target":19},{"source":17,"target":20},
+      {"source":17,"target":21},{"source":17,"target":22},{"source":17,"target":23},
+      {"source":24,"target":25},{"source":24,"target":26},{"source":24,"target":27},
+      {"source":24,"target":28},{"source":24,"target":29},{"source":24,"target":30},
+      {"source":31,"target":32},{"source":31,"target":33},{"source":31,"target":34},
+      {"source":35,"target":36},{"source":35,"target":37},{"source":35,"target":38}
+    ];
+
+    // Create nodes with network graph aesthetic
+    const nodeMeshes = {};
+    const nodeGroup = new THREE.Group();
+    const textSprites = [];
+    const particleSystems = [];
+    
+    nodes.forEach((node, i) => {
+      // More scattered positioning like network graphs
+      const categoryIndex = Math.floor(node.id / 10);
+      const categoryAngle = (categoryIndex * Math.PI * 2) / 6;
+      const categoryRadius = 20 + Math.random() * 10;
+      const itemAngle = (node.id % 10) * 0.8 + Math.random() * 0.4;
+      const itemRadius = 5 + Math.random() * 8;
+      
+      const x = categoryRadius * Math.cos(categoryAngle) + itemRadius * Math.cos(itemAngle) + (Math.random() - 0.5) * 10;
+      const y = (Math.random() - 0.5) * 30;
+      const z = categoryRadius * Math.sin(categoryAngle) + itemRadius * Math.sin(itemAngle) + (Math.random() - 0.5) * 10;
+
+      // Small colored dots as nodes
+      const nodeGeometry = new THREE.SphereGeometry(node.size * 0.3, 8, 8);
+      const nodeMaterial = new THREE.MeshBasicMaterial({ 
+        color: node.color,
+        transparent: true,
+        opacity: 0.9
+      });
+      
+      const mesh = new THREE.Mesh(nodeGeometry, nodeMaterial);
+      mesh.position.set(x, y, z);
+      mesh.userData = { ...node };
+      
+      nodeMeshes[node.id] = mesh;
+      nodeGroup.add(mesh);
+
+      // Add green particle system around each node
+      const particleGeometry = new THREE.BufferGeometry();
+      const particleCount = 15;
+      const particlePositions = [];
+      const particleVelocities = [];
+      
+      for (let j = 0; j < particleCount; j++) {
+        const px = x + (Math.random() - 0.5) * 6;
+        const py = y + (Math.random() - 0.5) * 6;
+        const pz = z + (Math.random() - 0.5) * 6;
+        particlePositions.push(px, py, pz);
+        
+        // Add velocity data for animation
+        particleVelocities.push(
+          (Math.random() - 0.5) * 0.02,
+          (Math.random() - 0.5) * 0.02,
+          (Math.random() - 0.5) * 0.02
+        );
+      }
+      
+             particleGeometry.setAttribute('position', new THREE.Float32BufferAttribute(particlePositions, 3));
+       const particleMaterial = new THREE.PointsMaterial({
+         color: 0x00ff88,
+         size: 0.15,
+         transparent: true,
+         opacity: 0.8,
+         blending: THREE.AdditiveBlending
+       });
+      
+      const particleSystem = new THREE.Points(particleGeometry, particleMaterial);
+      particleSystem.userData = { 
+        velocities: particleVelocities,
+        originalPosition: { x, y, z },
+        nodeSize: node.size
+      };
+      particleSystems.push(particleSystem);
+      scene.add(particleSystem);
+
+      // Create text labels with network graph style
+      const textCanvas = document.createElement('canvas');
+      const textCtx = textCanvas.getContext('2d');
+      textCanvas.width = 512;
+      textCanvas.height = 64;
+      
+      // Network graph style text
+      textCtx.fillStyle = 'rgba(0, 0, 0, 0)';
+      textCtx.fillRect(0, 0, textCanvas.width, textCanvas.height);
+      
+      textCtx.font = '20px Courier New';
+      textCtx.fillStyle = '#00ff88';
+      textCtx.textAlign = 'left';
+      textCtx.fillText(node.label, 10, 35);
+      
+      const textTexture = new THREE.CanvasTexture(textCanvas);
+      const textMaterial = new THREE.SpriteMaterial({ 
+        map: textTexture,
+        transparent: true,
+        opacity: 0.85
+      });
+      const textSprite = new THREE.Sprite(textMaterial);
+      textSprite.scale.set(8, 1, 1);
+      
+      // Position text randomly around node like in network graphs
+      const textOffset = Math.random() * Math.PI * 2;
+      const textDistance = 2 + Math.random() * 2;
+      textSprite.position.set(
+        x + Math.cos(textOffset) * textDistance,
+        y + Math.sin(textOffset) * textDistance,
+        z
+      );
+      
+      textSprites.push(textSprite);
+      scene.add(textSprite);
+    });
+
+    // Add floating green particles in background
+    const floatingParticleGeometry = new THREE.BufferGeometry();
+    const floatingParticleCount = 200;
+    const floatingParticlePositions = [];
+    const floatingParticleVelocities = [];
+    
+    for (let i = 0; i < floatingParticleCount; i++) {
+      const x = (Math.random() - 0.5) * 100;
+      const y = (Math.random() - 0.5) * 100;
+      const z = (Math.random() - 0.5) * 100;
+      floatingParticlePositions.push(x, y, z);
+      
+      floatingParticleVelocities.push(
+        (Math.random() - 0.5) * 0.01,
+        (Math.random() - 0.5) * 0.01,
+        (Math.random() - 0.5) * 0.01
+      );
+    }
+    
+         floatingParticleGeometry.setAttribute('position', new THREE.Float32BufferAttribute(floatingParticlePositions, 3));
+     const floatingParticleMaterial = new THREE.PointsMaterial({
+       color: 0x00ff88,
+       size: 0.08,
+       transparent: true,
+       opacity: 0.5,
+       blending: THREE.AdditiveBlending
+     });
+    
+    const floatingParticles = new THREE.Points(floatingParticleGeometry, floatingParticleMaterial);
+    floatingParticles.userData = { velocities: floatingParticleVelocities };
+    scene.add(floatingParticles);
+
+    scene.add(nodeGroup);
+
+    // Create minimal connecting lines
+    edges.forEach(({ source, target }) => {
+      const sourcePos = nodeMeshes[source].position;
+      const targetPos = nodeMeshes[target].position;
+      
+      const lineGeometry = new THREE.BufferGeometry().setFromPoints([sourcePos, targetPos]);
+      const lineMaterial = new THREE.LineBasicMaterial({ 
+        color: 0x333333,
+        transparent: true,
+        opacity: 0.3
+      });
+      const line = new THREE.Line(lineGeometry, lineMaterial);
+      scene.add(line);
+    });
+
+    // Mouse interaction
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+    const nodeInfo = document.getElementById('nodeInfo');
+    const nodeTitle = document.getElementById('nodeTitle');
+    const nodeDescription = document.getElementById('nodeDescription');
+    
+    let hoveredNode = null;
+
+    function onMouseMove(event) {
+      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+      
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(nodeGroup.children);
+      
+      if (intersects.length > 0) {
+        const intersectedNode = intersects[0].object;
+        if (intersectedNode.userData.label && intersectedNode !== hoveredNode) {
+          hoveredNode = intersectedNode;
+          nodeTitle.textContent = intersectedNode.userData.label;
+          nodeDescription.textContent = intersectedNode.userData.description;
+          nodeInfo.style.display = 'block';
+          
+          // Subtle highlight effect
+          intersectedNode.material.opacity = 1;
+          intersectedNode.scale.set(1.3, 1.3, 1.3);
+        }
+      } else {
+        if (hoveredNode) {
+          hoveredNode.material.opacity = 0.9;
+          hoveredNode.scale.set(1, 1, 1);
+          hoveredNode = null;
+        }
+        nodeInfo.style.display = 'none';
+      }
+    }
+
+    window.addEventListener('mousemove', onMouseMove);
+
+    // Minimal animation
+    function animate() {
+      requestAnimationFrame(animate);
+      
+      const time = Date.now() * 0.0005;
+      
+      // Subtle text floating
+      textSprites.forEach((sprite, index) => {
+        sprite.position.y += Math.sin(time + index * 0.1) * 0.005;
+      });
+      
+      // Subtle background particle movement
+      bgParticles.rotation.y = time * 0.02;
+      
+             // Animate node particles
+       particleSystems.forEach(system => {
+         const userData = system.userData;
+         const velocities = userData.velocities;
+         const originalPos = userData.originalPosition;
+         const nodeSize = userData.nodeSize;
+         const positions = system.geometry.attributes.position.array;
+
+         for (let i = 0; i < positions.length; i += 3) {
+           // Update positions
+           positions[i] += velocities[i];
+           positions[i + 1] += velocities[i + 1];
+           positions[i + 2] += velocities[i + 2];
+
+           // Bounce off boundaries around the node
+           const maxDistance = nodeSize * 3;
+           if (Math.abs(positions[i] - originalPos.x) > maxDistance) {
+             velocities[i] *= -1;
+           }
+           if (Math.abs(positions[i + 1] - originalPos.y) > maxDistance) {
+             velocities[i + 1] *= -1;
+           }
+           if (Math.abs(positions[i + 2] - originalPos.z) > maxDistance) {
+             velocities[i + 2] *= -1;
+           }
+         }
+         system.geometry.attributes.position.needsUpdate = true;
+       });
+
+       // Animate floating background particles
+       const floatingVelocities = floatingParticles.userData.velocities;
+       const floatingPositions = floatingParticles.geometry.attributes.position.array;
+       
+       for (let i = 0; i < floatingPositions.length; i += 3) {
+         floatingPositions[i] += floatingVelocities[i];
+         floatingPositions[i + 1] += floatingVelocities[i + 1];
+         floatingPositions[i + 2] += floatingVelocities[i + 2];
+
+         // Bounce off boundaries
+         if (Math.abs(floatingPositions[i]) > 50) {
+           floatingVelocities[i] *= -1;
+         }
+         if (Math.abs(floatingPositions[i + 1]) > 50) {
+           floatingVelocities[i + 1] *= -1;
+         }
+         if (Math.abs(floatingPositions[i + 2]) > 50) {
+           floatingVelocities[i + 2] *= -1;
+         }
+       }
+       floatingParticles.geometry.attributes.position.needsUpdate = true;
+
+      controls.update();
+      renderer.render(scene, camera);
+    }
+    
+    animate();
+
+    // Responsive design
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+    
+    console.log('Knowledge Network loaded successfully!');
+    
+  } catch (error) {
+    console.error('Error:', error);
+    document.body.innerHTML = '<h1 style="color: #00ff88; text-align: center; margin-top: 50vh; font-family: Courier New;">ERROR: ' + error.message + '</h1>';
+  }
+</script>
+</body>
+</html>

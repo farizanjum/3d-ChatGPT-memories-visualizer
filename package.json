@@ -1,0 +1,47 @@
+{
+  "name": "knowledge-network-visualizer",
+  "version": "1.0.0",
+  "description": "Transform your ChatGPT conversation history into stunning 3D interactive concept maps",
+  "main": "index.html",
+  "scripts": {
+    "dev": "python -m http.server 8000",
+    "serve": "python -m http.server 8000",
+    "start": "python -m http.server 8000",
+    "build": "echo 'No build step required - pure HTML/CSS/JS'",
+    "test": "echo 'No tests configured'",
+    "deploy": "echo 'Push to GitHub main branch to deploy via GitHub Pages'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/farizanjum/3d-ChatGPT-memories-visualizer.git"
+  },
+  "keywords": [
+    "visualization",
+    "concept-map",
+    "3d",
+    "threejs",
+    "interactive",
+    "network-graph",
+    "knowledge-graph",
+    "chatgpt",
+    "ai",
+    "education",
+    "learning"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/farizanjum/3d-ChatGPT-memories-visualizer/issues"
+  },
+  "homepage": "https://farizanjum.github.io/3d-ChatGPT-memories-visualizer/",
+  "dependencies": {},
+  "devDependencies": {},
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ],
+  "engines": {
+    "node": ">=14.0.0"
+  }
+} 

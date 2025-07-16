@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knowledge Network Visualizer</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #0a0a0a;
+            color: #00ff88;
+            font-family: 'Courier New', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            text-align: center;
+            padding: 20px;
+        }
+        .loading {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        .dots {
+            animation: loading 2s infinite;
+        }
+        @keyframes loading {
+            0%, 20% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌐 Knowledge Network Visualizer</h1>
+        <div class="loading">Loading your interactive concept map<span class="dots">...</span></div>
+        <p>Redirecting to visualization...</p>
+    </div>
+    
+    <script>
+        // Redirect to concept-map.html after a short delay
+        setTimeout(() => {
+            window.location.href = './concept-map.html';
+        }, 2000);
+    </script>
+</body>
+</html> 
