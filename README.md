@@ -6,7 +6,7 @@ An advanced, network-graph style visualization tool that analyzes conversation t
 
 <a href="https://ibb.co/Gfh88kqq"><img src="https://i.ibb.co/zWkBBbzz/Screenshot-2025-07-16-230529.png" alt="Screenshot-2025-07-16-230529" border="0"></a>
 
-## 🚀 [**Live Demo**](https://3d-chatgpt-memories-visualizer.netlify.app)
+## 🚀 [**Live Demo**](https://3d-chatgpt-memories.netlify.app)
 
 ![Knowledge Network Preview](./preview.gif)
 
