@@ -4,7 +4,9 @@
 
 An advanced, network-graph style visualization tool that analyzes conversation themes and creates beautiful 3D interactive concept maps using Three.js. This project was created using a hybrid approach combining AI prompts with Cursor IDE for enhanced development.
 
-## 🚀 [**Live Demo**](https://yourusername.github.io/knowledge-network-visualizer/)
+<a href="https://ibb.co/Gfh88kqq"><img src="https://i.ibb.co/zWkBBbzz/Screenshot-2025-07-16-230529.png" alt="Screenshot-2025-07-16-230529" border="0"></a>
+
+## 🚀 [**Live Demo**](https://3d-chatgpt-memories-visualizer.netlify.app)
 
 ![Knowledge Network Preview](./preview.gif)
 
@@ -197,7 +199,5 @@ Having issues? Want to showcase your creation?
 <div align="center">
 
 **Made with ❤️ using AI + Human creativity**
-
-[Demo](https://yourusername.github.io/knowledge-network-visualizer/) • [Documentation](https://github.com/yourusername/knowledge-network-visualizer) • [Issues](https://github.com/yourusername/knowledge-network-visualizer/issues)
 
 </div> 
